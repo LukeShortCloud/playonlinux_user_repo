@@ -1,37 +1,33 @@
 #!/bin/bash
-## Version: v0.0
+## PinballFX2 (Steam)
+## Version: v0.0.2
+## Installation Requirements: wine 1.7.34, Steam, msxml3
+
 [ "$PLAYONLINUX" = "" ] && exit 0
 source "$PLAYONLINUX/lib/sources"
 
 POL_SetupWindow_Init
 
-POL_SetupWindow_message "Pinball FX2" "This program will guide you through the installation of the Steam version of Pinball FX2."
+POL_SetupWindow_message "This program will guide you through the installation of the Steam version of Pinball FX2." "Pinball FX2 (Steam)" 
 
-POL_SetupWindow_question "Fixes will be applied to allow you to run Pinball FX2's Steam edition. Would you like to continue?" "Pinball FX2 (Steam)"
-
+POL_SetupWindow_question "Steam will now be installed along with the needed dependencies. After Steam is done installing do NOT select to 'Run Steam'. Exit out of the installation and it will re-open. Then proceed with installing Pinball FX2. Once that is complete you will need to completely close out of Steam." "Pinball FX2 (Steam)"
 
 #Sets up Wine
 POL_Wine_SelectPrefix "pinballfx2"
 POL_Wine_PrefixCreate "1.7.34"
 
-#Create the temporary directory and download Steam
-POL_System_TmpCreate "~/.tmp/"
-cd "$POL_System_TmpDir"
-POL_Download "http://media.steampowered.com/client/installer/SteamSetup.exe"
-
-
 #Tweaks Wine for Steam
+POL_Install_msxml3
 POL_Call POL_Install_steam
 POL_Call POL_Install_steam_flags
-POL_Wine start /unix "~/.tmp/SteamSetup.exe"
+POL_Wine start /unix ~/.PlayOnLinux/wineprefix/pinballfx2/drive_c/Program\ Files/Steam/Steam.exe
 
+## FIXME - Automatic shortcut is not working
+#POL_Shortcut ~/.PlayOnLinux/wineprefix/pinballfx2/drive_c/Program\ Files/Steam/steamapps/common/Pinball\ FX2/Pinball\ FX2.exe "Pinball FX2 (Steam)"
 
-POL_System_TmpDelete "~/.tmp/"
 POL_SetupWindow_Close
-
-
 
 exit
 
-# See http://www.playonlinux.com/repository/?cat=100
-# and http://www.playonlinux.com/en/dev-documentation-11.html for useful help
+## See http://www.playonlinux.com/repository/?cat=100
+## and http://www.playonlinux.com/en/dev-documentation-11.html for useful help
