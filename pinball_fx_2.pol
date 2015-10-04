@@ -1,7 +1,10 @@
 #!/bin/bash
-## PinballFX2 (Steam)
-## Version: v0.0.2
-## Installation Requirements: wine 1.7.34, Steam, msxml3
+
+# PinballFX2 (Steam)
+# Version: 0.1
+# Installation Requirements: 
+#	wine 1.7.34, Steam, msxml3
+# Author: EkulTails
 
 [ "$PLAYONLINUX" = "" ] && exit 0
 source "$PLAYONLINUX/lib/sources"
