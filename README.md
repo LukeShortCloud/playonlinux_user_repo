@@ -3,9 +3,11 @@ A collection of my own PlayOnLinux scripts.
 
 Current list of installation scripts:
 * Pinball FX2 (Steam)
-* Rise of Nations Gold Edition (non-Steam)
+* Rise of Nations (non-Steam)
+  * also supports the Thrones and Patriots Expansion pack
 
 Planned scripts:
+* Minecraft: Story Mode
 * Star Wars: Empire at War Gold Pack (Steam)
 
 ## License

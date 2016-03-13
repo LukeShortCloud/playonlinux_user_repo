@@ -1,0 +1,52 @@
+#!/bin/bash
+# Rise of Nations - Play On Linux script
+# Version: 0.1
+# Installation Requirements: 
+#	wine 1.7.18, directmusic, dsound, mfc40, mfc42, msvcirt, msxml4, vcrun6
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+# enable debugging
+POL_Debug_Init
+
+# set global variables
+TITLE="Rise of Nations"
+PREFIX="RoN"
+
+# start the installation window
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "Big Huge Games" "http://bighugegames.com" "EkulTails" "$PREFIX"
+
+# locate the CD mount point and then check to see if the required
+# "setup.exe" file exists
+POL_SetupWindow_cdrom
+POL_SetupWindow_check_cdrom "Setup.exe"
+
+# use our unique prefix for installing Wine
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "1.7.18"
+
+# install required depedencies in the Wine environment
+POL_Call POL_Install_directmusic
+POL_Call POL_Install_dsound
+POL_Call POL_Install_mfc40
+POL_Call POL_Install_mfc42
+POL_CALL POL_Install_msxml4
+POL_CALL POL_Install_vcrun6
+
+# run the RoN installation and wait for it to complete
+POL_Wine_WaitBefore "$TITLE"
+POL_Wine "$CDROM/Setup.exe"
+POL_Wine_WaitExit "$TITLE"
+
+# this file needs a few tweaks for RoN to run smoothly
+rise2ini="$PREFIX/drive_c/users/$USER/Application Data/Microsoft Games/Rise of Nations/rise2.ini"
+echo -e "ForceGIDCursor=1\nSkipIntroMovies=1\nFullScreen=0\nForceLowCPUBackgroundVid=1\n" >> $rise2ini
+
+# create the shortcut and exit
+POL_Shortcut "rise.exe" "$TITLE"
+POL_SetupWindow_close
+exit 0
