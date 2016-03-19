@@ -25,8 +25,7 @@ POL_SetupWindow_presentation "$TITLE" "Big Huge Games" "http://bighugegames.com"
 # tell the user's about compatibility
 POL_SetupWindow_message "This PlayOnLinux script will work with any version of the non-Steam Rise of Nations game. That includes the base Rise of Nations game, the Thrones and Patriots expansion, and the Gold Edition. The Steam version does not work because the game was rebuilt to use DirectX10 instead of DirectX9. Better support for DirectX10 in Wine is still a work-in-progress." "Compatibility"
 
-# locate the CD mount point and then check to see if the required
-# "setup.exe" file exists
+# locate the CD mount point and then check to see if the required executable exists
 POL_SetupWindow_cdrom
 POL_SetupWindow_check_cdrom "Setup.exe"
 
