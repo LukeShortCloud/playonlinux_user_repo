@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# The Elder Scrolls: Morrowind (Steam)
+# Version: 0.1.0
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+# enable debugging support
+POL_Debug_Init
+
+# global variables
+TITLE="The Elder Scrolls: Morrowind (Steam)"
+PREFIX="tes_morrowind_steam"
+
+# star thte installation window
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "Bethesda Game Studios" "https://bgs.bethsoft.com" "ekultails@gmail.com" "$PREFIX"
+
+# tell the user about compatibility
+POL_SetupWindow_message "$(eval_gettext 'Only the Steam version of Morrowind is supported.')" "$TITLE"
+
+# install Wine
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "1.8.5"
+
+POL_SetupWindow_message "$(eval_gettext 'Once the game is installed, please do not start it. Exit out of Steam completely so the PlayOnLinux script can finish successfully.')" "$TITLE"
+
+# install Steam
+POL_Call POL_Install_steam
+# install the game
+STEAM_ID="22320"
+POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
+POL_Wine_WaitExit "$TITLE"
+
+POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+
+POL_SetupWindow_Close
+exit 0
