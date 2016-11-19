@@ -3,13 +3,16 @@
 A collection of my own PlayOnLinux scripts.
 
 Current list of installation scripts:
-* Pinball FX2 (Steam)
-* Rise of Nations (non-Steam)
-  * also supports the Thrones and Patriots expansion pack and the Gold Edition
+
+* pinball_fx_2 = Pinball FX2 (Steam)
+* rise_of_nations = Rise of Nations, Rise of Nations: Thrones and Patriots, Rise of Nations: Gold Edition 
+    * Rise of Nations: Exteneded Edition (Steam) does not work due to DirectX 10 incompatibility issues within Wine   
 
 Planned scripts:
-* The Elder Scrolls: Morrowind
-* Minecraft: Story Mode
+
+* The Elder Scrolls: Morrowind (Steam)
+* Minecraft: Story Mode (all)
+* Sonic and All Stars Racing Transformed (Steam)
 * Star Wars: Empire at War Gold Pack (Steam)
 
 ## License
