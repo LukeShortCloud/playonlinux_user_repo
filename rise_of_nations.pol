@@ -1,6 +1,6 @@
 #!/bin/bash
 # Rise of Nations - Play On Linux script
-# Version: 0.2.0
+# Version: 0.2.0-2
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux
 
@@ -20,8 +20,8 @@ POL_SetupWindow_Init
 POL_SetupWindow_presentation "$TITLE" "Big Huge Games" "http://bighugegames.com" "EkulTails" "$PREFIX"
 
 # tell the user's about compatibility;
-# Rise of Nations the Extended Edition requires DirectX11
-# which Wine does not supprt very well right now
+# the Rise of Nations: Extended Edition requires DirectX 10 or 11
+# which Wine does not supprt either very well right now
 POL_SetupWindow_message "$(eval_gettext 'This script is incompatible with the Steam version of Rise of Nations the Extended Edition. All other versions should work.')" "$TITLE"
 
 POL_SetupWindow_browse "$(eval_gettext 'Select the Setup.exe file')" "$TITLE"
@@ -42,7 +42,6 @@ POL_Call POL_Install_directmusic
 POL_Call POL_Install_dsound
 
 # run the RoN installation and wait for it to complete
-#POL_Wine_WaitBefore "$TITLE"
 POL_Wine --ignore-errors "$APP_ANSWER"
 POL_Wine_WaitExit "$TITLE"
 
@@ -74,13 +73,15 @@ sed -i '/ForceGDICursor=/d' "$rise2ini"
 sed -i '/ForceLowCPUBackgroundVid=/d' "$rise2ini"
 sed -i '/SkipIntroMovies=/d' "$rise2ini"
 sed -i '/FullScreen=/d' "$rise2ini"
-# add the necessary values
+
+# create a new settings block if it does not exist
 if [[ "$rise2ini_created" == "true" ]]; then
     cat <<EOF >> "$rise2ini"
 [RISE OF NATIONS]
 EOF
 fi
 
+# append the necessary setings
 cat <<EOF >> "$rise2ini"
 ForceGDICursor=1
 SkipIntroMovies=1
