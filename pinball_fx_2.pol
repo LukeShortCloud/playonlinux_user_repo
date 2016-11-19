@@ -1,36 +1,42 @@
 #!/bin/bash
 
 # PinballFX2 (Steam)
-# Version: 0.1
-# Installation Requirements: 
-#	wine 1.7.34, Steam, msxml3
-# Author: EkulTails
+# Version: 0.2.0
+# Author: ekultails@gmail.com
+# Website: ttps://github.com/ekultails/playonlinux
 
 [ "$PLAYONLINUX" = "" ] && exit 0
 source "$PLAYONLINUX/lib/sources"
 
+# enable debugging support
+POL_Debug_Init
+
+# global variables
+TITLE="Pinball FX2"
+PREFIX="pinball_fx2"
+
+# star thte installation window
 POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "Zen Studios" "https://blog.zenstudios.com" "EkulTails" "$PREFIX"
 
-POL_SetupWindow_message "This program will guide you through the installation of the Steam version of Pinball FX2." "Pinball FX2 (Steam)" 
+# tell the user about compatibility
+POL_SetupWindow_message "$(eval_gettext 'Only the Steam version of Pinball FX2 is supported.')" "$TITLE"
 
-POL_SetupWindow_question "Steam will now be installed along with the needed dependencies. After Steam is done installing do NOT select to 'Run Steam'. Exit out of the installation and it will re-open. Then proceed with installing Pinball FX2. Once that is complete you will need to completely close out of Steam." "Pinball FX2 (Steam)"
+# install Wine
+POL_Wine_SelectPrefix "$PREFIX"
+###POL_Wine_PrefixCreate "1.7.34"
+POL_Wine_PrefixCreate "1.8.4"
 
-#Sets up Wine
-POL_Wine_SelectPrefix "pinballfx2"
-POL_Wine_PrefixCreate "1.7.34"
+POL_SetupWindow_message "$(eval_gettext 'Once the game is installed, please do not start it. Exit out of Steam completely so the PlayOnLinux script can finish successfully.')" "$TITLE"
 
-#Tweaks Wine for Steam
-POL_Install_msxml3
+# install Steam
 POL_Call POL_Install_steam
-POL_Call POL_Install_steam_flags
-POL_Wine start /unix ~/.PlayOnLinux/wineprefix/pinballfx2/drive_c/Program\ Files/Steam/Steam.exe
+# install the game
+STEAM_ID="226980"
+POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
+POL_Wine_WaitExit "$TITLE"
 
-## FIXME - Automatic shortcut is not working
-#POL_Shortcut ~/.PlayOnLinux/wineprefix/pinballfx2/drive_c/Program\ Files/Steam/steamapps/common/Pinball\ FX2/Pinball\ FX2.exe "Pinball FX2 (Steam)"
+POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
 
 POL_SetupWindow_Close
-
-exit
-
-## See http://www.playonlinux.com/repository/?cat=100
-## and http://www.playonlinux.com/en/dev-documentation-11.html for useful help
+exit 0
