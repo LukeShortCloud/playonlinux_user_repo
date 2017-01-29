@@ -12,8 +12,10 @@ Current list of installation scripts:
 
 Planned scripts:
 
-* Minecraft: Story Mode (all)
-* Sonic and All Stars Racing Transformed (Steam)
+* Homeworld Remastered Collection (Digital, Steam)
+* Minecraft: Story Mode (CD, Digital, Steam)
+* Sonic and All Stars Racing Transformed (CD, Steam)
+* The Sims 4 (CD, Origin)
 
 
 ## License
