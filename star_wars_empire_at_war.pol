@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Star Wars: Empire at War (Steam)
+# Version: 0.1.0
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+# enable debugging support
+POL_Debug_Init
+
+# global variables
+TITLE="Star Wars: Empire at War"
+PREFIX="sw_empire_at_war"
+WINE_VERSION="2.0"
+STEAM_ID="32470"
+
+# star thte installation window
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "LucasArts" "http://lucasfilm.com/games" "EkulTails" "$PREFIX"
+
+# tell the user about compatibility
+POL_SetupWindow_message "$(eval_gettext 'Only the Steam version of $TITLE is supported.')" "$TITLE"
+
+# install Wine
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "$WINE_VERSION"
+
+POL_SetupWindow_message "$(eval_gettext 'Once the game is installed, please do not start it. Exit out of Steam completely so the PlayOnLinux script can finish successfully.')" "$TITLE"
+
+# install Steam
+POL_Call POL_Install_steam
+# install the game
+POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
+POL_Wine_WaitExit "$TITLE"
+POL_SetupWindow_question "$(eval_gettext 'Would you like $TITLE to be run in full screen mode?')"
+
+if [[ $APP_ANSWER == "TRUE" ]]; then
+	POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+else
+	POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID WINDOWED"
+fi
+
+POL_SetupWindow_Close
+exit 0
