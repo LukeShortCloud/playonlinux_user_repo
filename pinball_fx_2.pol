@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# PinballFX2 (Steam)
-# Version: 0.2.0-2
+# Pinball FX 2 (Steam)
+# Version: 0.3.0
 # Author: ekultails@gmail.com
-# Website: ttps://github.com/ekultails/playonlinux
+# Website: https://github.com/ekultails/playonlinux_user_repo
 
 [ "$PLAYONLINUX" = "" ] && exit 0
 source "$PLAYONLINUX/lib/sources"
@@ -12,26 +12,27 @@ source "$PLAYONLINUX/lib/sources"
 POL_Debug_Init
 
 # global variables
-TITLE="Pinball FX2"
+TITLE="Pinball FX 2"
 PREFIX="pinball_fx_2"
+WINE_VERSION="2.0"
+STEAM_ID="226980"
 
-# star thte installation window
+# start the installation window
 POL_SetupWindow_Init
 POL_SetupWindow_presentation "$TITLE" "Zen Studios" "https://blog.zenstudios.com" "EkulTails" "$PREFIX"
 
 # tell the user about compatibility
-POL_SetupWindow_message "$(eval_gettext 'Only the Steam version of Pinball FX2 is supported.')" "$TITLE"
+POL_SetupWindow_message "$(eval_gettext 'Only the Steam version of Pinball FX 2 is supported. The Windows Store version is not installable.')" "$TITLE"
 
 # install Wine
 POL_Wine_SelectPrefix "$PREFIX"
-POL_Wine_PrefixCreate "1.8.4"
+POL_Wine_PrefixCreate "$WINE_VERSION"
 
 POL_SetupWindow_message "$(eval_gettext 'Once the game is installed, please do not start it. Exit out of Steam completely so the PlayOnLinux script can finish successfully.')" "$TITLE"
 
 # install Steam
 POL_Call POL_Install_steam
 # install the game
-STEAM_ID="226980"
 POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
 POL_Wine_WaitExit "$TITLE"
 
