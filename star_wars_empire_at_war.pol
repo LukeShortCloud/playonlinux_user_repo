@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Star Wars: Empire at War (Steam)
-# Version: 0.1.0
+# Version: 0.1.1
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux
 
@@ -35,12 +35,12 @@ POL_Call POL_Install_steam
 # install the game
 POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
 POL_Wine_WaitExit "$TITLE"
-POL_SetupWindow_question "$(eval_gettext 'Would you like $TITLE to be run in full screen mode?')"
+POL_SetupWindow_question "$(eval_gettext 'Would you like $TITLE to be run in windowed mode?')"
 
 if [[ $APP_ANSWER == "TRUE" ]]; then
-	POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
-else
 	POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID WINDOWED"
+else
+	POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
 fi
 
 POL_SetupWindow_Close
