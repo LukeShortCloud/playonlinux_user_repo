@@ -8,6 +8,8 @@ PUR scripts:
 * rise_of_nations = Rise of Nations, Rise of Nations: Thrones and Patriots, Rise of Nations: Gold Edition 
     * Rise of Nations: Exteneded Edition (Steam) does not work due to DirectX 10 incompatibility issues within Wine   
 * star_wars_empire_at_war = Star Wars Empire at War: Gold Pack (Steam)
+* star_wars_galaxies = Star Wars Galaxies: The Complete Online Adventures (Disc)
+    * The official online servers for this game were shut down in 2011 but unofficial server emulators exist. This script can be used to install the SWGEmu client to be able to connect to SWGEmu servers. PUR does not endorse the use of these servers. Use at your own risk.
 * tes_morrowind_steam = The Elder Scrolls: Morrowind Game of the Year Edition (Steam)
 
 

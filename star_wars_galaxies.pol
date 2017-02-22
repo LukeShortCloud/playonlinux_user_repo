@@ -1,0 +1,48 @@
+#!/bin/bash
+# Star Wars Galaxies - Play On Linux script
+# Version: 0.1.0
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux-user-repo
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+# enable debugging
+POL_Debug_Init
+
+# set global variables
+TITLE="Star Wars Galaxies"
+PREFIX="star_wars_galaxies"
+
+# start the installation window
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "LucasArts" "http://lucasfilm.com/games" "EkulTails" "$PREFIX"
+
+POL_SetupWindow_browse "$(eval_gettext 'Select the setup.exe file')" "$TITLE"
+
+# use our unique prefix for installing Wine
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "2.0"
+
+# install the dependencies
+POL_CALL POL_Install_vcrun2010
+
+# run the installation and wait for it to complete
+POL_Wine "$APP_ANSWER"
+POL_Wine_WaitExit "$TITLE"
+
+POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWGEmu?')" "$TITLE"
+
+if [[ $APP_ANSWER == "TRUE" ]]; then
+	mkdir -p $POL_System_TmpDir
+	cd $POL_System_TmpDir
+	POL_Download "http://launchpad2.net/setup.exe"
+	POL_Wine "setup.exe"
+	POL_Wine_WaitExit "$TITLE"
+	POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
+else
+	POL_Shortcut "LauchPad.exe" "$TITLE"
+fi
+
+POL_SetupWindow_Close
+exit 0
