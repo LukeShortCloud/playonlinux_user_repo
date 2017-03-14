@@ -41,7 +41,7 @@ if [[ $APP_ANSWER == "TRUE" ]]; then
 	POL_Wine_WaitExit "$TITLE"
 	POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
 else
-	POL_Shortcut "LauchPad.exe" "$TITLE"
+	POL_Shortcut "LaunchPad.exe" "$TITLE"
 fi
 
 POL_SetupWindow_Close
