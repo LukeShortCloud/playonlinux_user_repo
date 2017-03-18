@@ -1,0 +1,60 @@
+#!/bin/bash
+# StarCraft II - PlayOnLinux script
+# Version: 0.1.0-dev
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux
+
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+
+# enable debugging
+POL_Debug_Init
+
+# set global variables
+TITLE="StarCraft II"
+PREFIX="starcraft_2"
+USE_DVD="FALSE"
+
+# start the installation window
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "Blizzard" "http://blizzard.com" "EkulTails" "$PREFIX"
+POL_SetupWindow_question "$(eval_gettext 'Do you want to install from the DVD?')" "$TITLE"
+
+# use our unique prefix for installing Wine
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "2.0"
+
+# install required dependencies in the Wine environment
+POL_Install_corefonts
+POL_Install_vcrun2005
+POL_Install_vcrun2008
+# As of 2017-03-18, there is no official PlayOnLinux script
+# for installing the Visual C++ 2015 Redistributable package
+curl -k -O https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+chmod +x ./winetricks
+WINEPRFIX="$POL_USER_ROOT/wineprefix/$PREFIX" ./winetricks -q vcrun2015
+
+# run the DVD installation
+if [[ $APP_ANSWER == "TRUE" ]]; then
+	USE_DVD="TRUE"
+	POL_SetupWindow_browse "$(eval_gettext 'Select the "starcraft ii setup.exe" file')" "$TITLE"
+	POL_Wine --ignore-errors "$APP_ANSWER"
+	POL_Wine_WaitExit "$TITLE"
+fi
+
+if [[ $USE_DVD == "TRUE" ]]; then
+	POL_SetupWindow_question "$(eval_gettext 'Is there another DVD for installation?')" "$TITLE"
+
+	if [[ $APP_ANSWER == "TRUE" ]]; then
+	
+		POL_SetupWindow_browse "$(eval_gettext 'Select the "starcraft ii setup.exe" file')" "$TITLE"
+		POL_Wine --ignore-errors "$APP_ANSWER"
+		POL_Wine_WaitExit "$TITLE"
+	fi
+
+fi
+
+POL_Shortcut "StarCraft II.exe" "$TITLE"
+
+POL_SetupWindow_Close
+exit 0
