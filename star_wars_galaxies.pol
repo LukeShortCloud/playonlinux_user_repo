@@ -1,6 +1,6 @@
 #!/bin/bash
 # Star Wars Galaxies - Play On Linux script
-# Version: 0.1.1
+# Version: 0.2.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux-user-repo
 
@@ -13,6 +13,7 @@ POL_Debug_Init
 # set global variables
 TITLE="Star Wars Galaxies"
 PREFIX="star_wars_galaxies"
+WINE_VERSION="2.0.1"
 
 # start the installation window
 POL_SetupWindow_Init
@@ -22,7 +23,7 @@ POL_SetupWindow_browse "$(eval_gettext 'Select the setup.exe file')" "$TITLE"
 
 # use our unique prefix for installing Wine
 POL_Wine_SelectPrefix "$PREFIX"
-POL_Wine_PrefixCreate "2.0"
+POL_Wine_PrefixCreate "$WINE_VERSION"
 
 # install the dependencies
 POL_CALL POL_Install_vcrun2010
@@ -31,7 +32,7 @@ POL_CALL POL_Install_vcrun2010
 POL_Wine "$APP_ANSWER"
 POL_Wine_WaitExit "$TITLE"
 
-POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWGEmu?')" "$TITLE"
+POL_SetupWindow_question "$(eval_gettext 'Would you like to install the SWGEmu launcher?')" "$TITLE"
 
 if [[ $APP_ANSWER == "TRUE" ]]; then
 	mkdir -p $POL_System_TmpDir
@@ -40,9 +41,22 @@ if [[ $APP_ANSWER == "TRUE" ]]; then
 	POL_Wine "setup.exe"
 	POL_Wine_WaitExit "$TITLE"
 	POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
-else
-	POL_Shortcut "LaunchPad.exe" "$TITLE"
 fi
 
+POL_SetupWindow_question "$(eval_gettext 'Would you like to install the Stella Bellum launcher?')" "$TITLE"
+
+if [[ $APP_ANSWER == "TRUE" ]]; then
+    # .NET is required for the Stella Bellum client launcher
+    POL_CALL POL_Install_dotnet40
+    # create a folder to store the Stella Bellum client launcher
+    swg_stella_bellum_directory="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/$PROGRAMFILES/swg_stella_bellum/"
+    cd $swg_stella_bellum_directory
+    wget 'https://drive.google.com/uc?export=download&id=0BwxgBQ3rAPEFenNFNlRDVkxFS3c' -O Stella_Launcher_V3.1.zip
+    unzip Stella_Launcher_V3.1.zip
+    POL_wine Stella_Launcher_V3.1/STELLA.Launcher.Updater.exe
+    POL_Shortcut "swgclient_r.exe" "SWG Stella Bellum Launcher"
+fi
+
+POL_Shortcut "LaunchPad.exe" "$TITLE"
 POL_SetupWindow_Close
 exit 0
