@@ -1,0 +1,31 @@
+#!/bin/bash
+# Blizzard App - PlayOnLinux script
+# Version: 0.1.0
+# Author: ekultails@gmail.com
+# Website: https://github.com/ekultails/playonlinux_user_repo
+#
+# Source PlayOnLinux functions.
+[ "$PLAYONLINUX" = "" ] && exit 0
+source "$PLAYONLINUX/lib/sources"
+# Enable PlayOnLinux debugging.
+POL_Debug_Init
+# Global variables.
+TITLE="Blizzard App"
+PREFIX="blizzard_app"
+WINE_VERSION="2.9-staging"
+# Start the installation window.
+POL_SetupWindow_Init
+POL_SetupWindow_presentation "$TITLE" "Blizzard" "http://blizzard.com" "EkulTails" "$PREFIX"
+POL_SetupWindow_browse "$(eval_gettext 'Select the Battle.net-Setup.exe file. After the installation is complete, exit out of the application to finish the PlayOnLinux setup of the Blizzard App.')" "$TITLE"
+# Install Wine.
+POL_Wine_SelectPrefix "$PREFIX"
+POL_Wine_PrefixCreate "$WINE_VERSION"
+# Install the application.
+POL_Wine --ignore-errors "$APP_ANSWER"
+# POL_Shortcut can specify:
+# (1) Executable (2) Shortcut name (3) Icon (4) Extra arguments
+# (5) Program categories
+# Hardware acceleration does not work with the Blizzard App.
+POL_Shortcut "Battle.net Launcher.exe" "$TITLE" "" "--disable-gpu"
+POL_SetupWindow_Close
+exit 0

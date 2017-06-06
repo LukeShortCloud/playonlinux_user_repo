@@ -12,6 +12,8 @@ PUR script types:
 
 PUR scripts:
 
+* blizzard_app = Blizzard App (Digital).
+    * The Blizzard App client can be used as a base for installing Blizzard games and other Wine dependencies.
 * pinball_fx_2 = Pinball FX2 (Steam).
 * rise_of_nations = Rise of Nations, Rise of Nations: Thrones and Patriots, Rise of Nations: Gold Edition.
     * Rise of Nations: Exteneded Edition (Steam) does not work due to DirectX 10 incompatibility issues within Wine.
