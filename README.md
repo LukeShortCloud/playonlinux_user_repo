@@ -22,6 +22,8 @@ PUR scripts:
     * The official online servers for this game were shut down in 2011 but unofficial server emulators exist. This script can be used to install the SWGEmu client to be able to connect to SWGEmu servers. PUR does not endorse the use of these servers. Use at your own risk.
 * tes_morrowind_steam = The Elder Scrolls: Morrowind Game of the Year Edition (Steam).
 
+The "pol4" (PlayOnLinux 4) directory contains scripts specific to that veresion of PoL. The successor to PlayOnLinux 4 is referred to as the [Phoenicis PlayOnLinux 5 project](https://github.com/PhoenicisOrg/POL-POM-5). This major change requires that PoL scripts now be created using a [JavaScript framework](https://github.com/PhoenicisOrg/Scripts/wiki) instead of using a Bash script.
+
 
 ## License
 
