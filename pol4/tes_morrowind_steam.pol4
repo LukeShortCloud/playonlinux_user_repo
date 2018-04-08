@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # The Elder Scrolls: Morrowind (Steam)
-# Version: 0.2.0
+# Version: 0.3.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux
 
@@ -14,7 +14,7 @@ POL_Debug_Init
 # global variables
 TITLE="The Elder Scrolls: Morrowind (Steam)"
 PREFIX="tes_morrowind_steam"
-WINE_VERSION="2.0.1"
+WINE_VERSION="3.0"
 
 # star thte installation window
 POL_SetupWindow_Init
