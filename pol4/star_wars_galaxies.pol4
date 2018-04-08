@@ -1,37 +1,39 @@
 #!/bin/bash
 # Star Wars Galaxies - Play On Linux script
-# Version: 0.1.1
+# Version: 0.2.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux-user-repo
 
 [ "$PLAYONLINUX" = "" ] && exit 0
 source "$PLAYONLINUX/lib/sources"
 
-# enable debugging
+# Enable debugging.
 POL_Debug_Init
 
-# set global variables
+# Set global variables.
 TITLE="Star Wars Galaxies"
 PREFIX="star_wars_galaxies"
+C_DRIVE_PATH="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/"
 
-# start the installation window
+# Start the installation window.
 POL_SetupWindow_Init
 POL_SetupWindow_presentation "$TITLE" "LucasArts" "http://lucasfilm.com/games" "EkulTails" "$PREFIX"
 
+# Find the installer executable.
 POL_SetupWindow_browse "$(eval_gettext 'Select the setup.exe file')" "$TITLE"
 
-# use our unique prefix for installing Wine
+# Use a unique prefix for installing Wine.
 POL_Wine_SelectPrefix "$PREFIX"
-POL_Wine_PrefixCreate "2.0"
+POL_Wine_PrefixCreate "3.0"
 
-# install the dependencies
+# Install the Microsoft Visual Studio C++ 2010 dependency.
 POL_CALL POL_Install_vcrun2010
 
-# run the installation and wait for it to complete
+# Run the installation and wait for it to complete.
 POL_Wine "$APP_ANSWER"
 POL_Wine_WaitExit "$TITLE"
 
-POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWGEmu?')" "$TITLE"
+POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWGEmu (Pre-Combat Update)?')" "$TITLE"
 
 if [[ $APP_ANSWER == "TRUE" ]]; then
 	mkdir -p $POL_System_TmpDir
@@ -40,9 +42,22 @@ if [[ $APP_ANSWER == "TRUE" ]]; then
 	POL_Wine "setup.exe"
 	POL_Wine_WaitExit "$TITLE"
 	POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
-else
-	POL_Shortcut "LaunchPad.exe" "$TITLE"
 fi
 
+# Wine <= 3.5 does not work with the SWG Legends launcher. Further testing is required.
+#POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWG Legends (New Game Engine)?')" "$TITLE"
+#
+#if [[ $APP_ANSWER == "TRUE" ]]; then
+#	cd "$C_DRIVE_PATH/Program Files/StarWarsGalaxies/"
+#	POL_Download "http://www.swglegends.com/launcher/SWGLegends.zip"
+#	unzip "SWGLegends.zip" || POL_Debug_Error "Unable to extract SWGLegends.zip"
+#	POL_Shortcut "SWGLegends.exe" "SWG Legends Launcher"
+#	rm -f "SWGLegends.zip"
+#fi
+
+# This is the original Star Wars Galaxies launcher for the game.
+# It no longer works since the official servers were shut down
+# on December 15, 2011.
+#POL_Shortcut "LaunchPad.exe" "$TITLE"
 POL_SetupWindow_Close
 exit 0
