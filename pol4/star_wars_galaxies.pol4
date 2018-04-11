@@ -1,6 +1,6 @@
 #!/bin/bash
 # Star Wars Galaxies - Play On Linux script
-# Version: 0.2.0
+# Version: 0.3.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux-user-repo
 
@@ -13,47 +13,71 @@ POL_Debug_Init
 # Set global variables.
 TITLE="Star Wars Galaxies"
 PREFIX="star_wars_galaxies"
-C_DRIVE_PATH="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/"
+C_DRIVE_PATH="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c"
 
 # Start the installation window.
 POL_SetupWindow_Init
 POL_SetupWindow_presentation "$TITLE" "LucasArts" "http://lucasfilm.com/games" "EkulTails" "$PREFIX"
 
-# Find the installer executable.
-POL_SetupWindow_browse "$(eval_gettext 'Select the setup.exe file')" "$TITLE"
-
+# Explicitly use a 32-bit Wine installation for compatibility with .NET 4.0 (required for the SWG
+# Legends launcher).
+POL_System_SetArch "x86"
 # Use a unique prefix for installing Wine.
 POL_Wine_SelectPrefix "$PREFIX"
 POL_Wine_PrefixCreate "3.0"
 
-# Install the Microsoft Visual Studio C++ 2010 dependency.
+# Install the Microsoft Visual Studio C++ 2010 dependency for Star War Galaxies.
 POL_CALL POL_Install_vcrun2010
 
-# Run the installation and wait for it to complete.
-POL_Wine "$APP_ANSWER"
-POL_Wine_WaitExit "$TITLE"
+POL_SetupWindow_InstallMethod "LOCAL,CD,STEAM"
 
-POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWGEmu (Pre-Combat Update)?')" "$TITLE"
-
-if [[ $APP_ANSWER == "TRUE" ]]; then
-	mkdir -p $POL_System_TmpDir
-	cd $POL_System_TmpDir
-	POL_Download "http://launchpad2.net/setup.exe"
-	POL_Wine "setup.exe"
-	POL_Wine_WaitExit "$TITLE"
-	POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
+if [[ $INSTALL_METHOD == "STEAM" ]]; then
+    # Install Steam.
+    POL_Call POL_Install_steam
+    # Install the game.
+    STEAM_ID="24170"
+    POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
+    POL_Wine_WaitExit "$TITLE"
+    POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+elif [[ $INSTALL_METHOD == "CD" ]]; then
+    POL_SetupWindow_cdrom
+    POL_SetupWindow_check_cdrom "setup.exe"
+    POL_Wine start /unix "$CDROM/setup.exe"
+    POL_Wine_WaitExit "$TITLE"
+else
+    # Find the installer executable.
+    POL_SetupWindow_browse "$(eval_gettext 'Select the setup.exe file')" "$TITLE"
+    # Run the installation and wait for it to complete.
+    POL_Wine start /unix "$APP_ANSWER"
+    POL_Wine_WaitExit "$TITLE"
 fi
 
-# Wine <= 3.5 does not work with the SWG Legends launcher. Further testing is required.
-#POL_SetupWindow_question "$(eval_gettext 'Would you like to install SWG Legends (New Game Engine)?')" "$TITLE"
-#
-#if [[ $APP_ANSWER == "TRUE" ]]; then
-#	cd "$C_DRIVE_PATH/Program Files/StarWarsGalaxies/"
-#	POL_Download "http://www.swglegends.com/launcher/SWGLegends.zip"
-#	unzip "SWGLegends.zip" || POL_Debug_Error "Unable to extract SWGLegends.zip"
-#	POL_Shortcut "SWGLegends.exe" "SWG Legends Launcher"
-#	rm -f "SWGLegends.zip"
-#fi
+# Prompt for a list of options and separate choices by the "~" character.
+POL_SetupWindow_menu_list "$(eval_gettext 'Do you want to install a third-party launcher to play on an active server?')" "$TITLE" "SWGEmu (Pre-Combat Update)~SWG Legends (New Game Engine)~None" "~"
+
+if [[ "$(echo $APP_ANSWER | grep -o "SWGEmu")" != "" ]]; then
+    mkdir -p $POL_System_TmpDir
+    cd $POL_System_TmpDir
+    POL_Download "http://launchpad2.net/setup.exe"
+    POL_Wine start /unix "setup.exe"
+    POL_Wine_WaitExit "$TITLE"
+    POL_Shortcut "SWGEmuLaunchpad.exe" "SWGEmu Launchpad"
+elif [[ "$(echo $APP_ANSWER | grep -o "SWG Legends")" != "" ]]; then
+
+    if [[ $INSTALL_METHOD == "STEAM" ]]; then
+        swg_installation_folder="$C_DRIVE_PATH/Program Files/Steam/SteamApps/common/StarWarsGalaxies/"
+    else
+        swg_installation_folder="$C_DRIVE_PATH/Program Files/StarWarsGalaxies/"
+    fi
+
+    cd "$swg_installation_folder"
+    POL_Download "http://www.swglegends.com/launcher/SWGLegends.zip"
+    unzip "SWGLegends.zip" || POL_Debug_Error "Unable to extract SWGLegends.zip"
+    POL_Shortcut "SWGLegends.exe" "SWG Legends Launcher"
+    rm -f "SWGLegends.zip"
+    # .NET 4.0 only works on 32-bit versions of Wine.
+    POL_Call POL_Install_dotnet40
+fi
 
 # This is the original Star Wars Galaxies launcher for the game.
 # It no longer works since the official servers were shut down
