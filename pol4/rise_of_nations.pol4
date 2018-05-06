@@ -1,6 +1,6 @@
 #!/bin/bash
 # Rise of Nations - Play On Linux script
-# Version: 0.2.0-2
+# Version: 0.3.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux
 
@@ -12,88 +12,96 @@ POL_Debug_Init
 
 # set global variables
 TITLE="Rise of Nations"
-PREFIX="rise_of_nations"
+PREFIX="rise_of_nations_steam"
 GAME_PATH="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/$PROGRAMFILES/Microsoft Games/Rise of Nations"
+WINE_VERSION="3.7"
+STEAM_ID="287450"
 
 # start the installation window
 POL_SetupWindow_Init
 POL_SetupWindow_presentation "$TITLE" "Big Huge Games" "http://bighugegames.com" "EkulTails" "$PREFIX"
 
-# tell the user's about compatibility;
-# the Rise of Nations: Extended Edition requires DirectX 10 or 11
-# which Wine does not supprt either very well right now
-POL_SetupWindow_message "$(eval_gettext 'This script is incompatible with the Steam version of Rise of Nations the Extended Edition. All other versions should work.')" "$TITLE"
-
-POL_SetupWindow_browse "$(eval_gettext 'Select the Setup.exe file')" "$TITLE"
-
 # use our unique prefix for installing Wine
 POL_Wine_SelectPrefix "$PREFIX"
-POL_Wine_PrefixCreate "1.8.4"
+POL_Wine_PrefixCreate "$WINE_VERSION"
 
-# install required depedencies in the Wine environment
-# the installer needs mfc42 which first requires vcrun6;
-# it fixes the error:
-# "Cannot load pidgin.dll"
-POL_CALL POL_Install_vcrun6
-POL_Call POL_Install_mfc42
 # these are required for music to play properly
-# (otherwise it plays too fast)
+# (otherwise it plays too fast or has no sound at all)
 POL_Call POL_Install_directmusic
 POL_Call POL_Install_dsound
 
-# run the RoN installation and wait for it to complete
-POL_Wine --ignore-errors "$APP_ANSWER"
-POL_Wine_WaitExit "$TITLE"
-
-POL_SetupWindow_question "$(eval_gettext 'Are you also installing a seperate Thrones and Partiots expansion CD?')" "$TITLE"
+POL_SetupWindow_message "$(eval_gettext 'Do not start the game once it is finished installing.')" "$TITLE"
+POL_SetupWindow_question "$(eval_gettext 'Are you installing the Extended Edition? Experimental support is provided for installing it from Steam.')" "$TITLE"
 
 if [[ $APP_ANSWER == "TRUE" ]]; then
-	POL_SetupWindow_browse "Select the Setup.exe file" "$TITLE"
-	POL_Wine --ignore-errors "$APP_ANSWER"
-	POL_Wine_WaitExit "$TITLE"
-fi
+    # RoN: Extended Edition requires at least Windows 7
+    Set_OS "win7"
+    POL_Call POL_Install_crypt32
+    # vcrun2015 might also have to be installed before installing Steam
+    POL_Call POL_Install_steam
+    POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
+    POL_Wine_WaitExit "$TITLE"
+    POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+else
+    # install required depedencies in the Wine environment
+    # the installer needs mfc42 to fix this error:
+    # "Cannot load pidgin.dll"
+    POL_Call POL_Install_mfc42
+    POL_SetupWindow_browse "$(eval_gettext 'Select the Setup.exe file')" "$TITLE"
+    # run the RoN installation and wait for it to complete
+    POL_Wine --ignore-errors "$APP_ANSWER"
+    POL_Wine_WaitExit "$TITLE"
 
-# this file needs a few tweaks for RoN to run smoothly
-rise2ini_path="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/users/$USER/Application Data/Microsoft Games/Rise of Nations"
-rise2ini="$rise2ini_path/rise2.ini"
+    POL_SetupWindow_question "$(eval_gettext 'Are you also installing a seperate Thrones and Partiots expansion CD?')" "$TITLE"
 
-# create the rise2.ini file if it does not exist already
-if [[ ! -d "$rise2ini_path" ]]; then
-	mkdir -p "$rise2ini_path"
+    if [[ $APP_ANSWER == "TRUE" ]]; then
+        POL_SetupWindow_browse "Select the Setup.exe file" "$TITLE"
+        POL_Wine --ignore-errors "$APP_ANSWER"
+        POL_Wine_WaitExit "$TITLE"
+    fi
 
-fi
+    # this file needs a few tweaks for RoN to run smoothly
+    rise2ini_path="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/users/$USER/Application Data/Microsoft Games/Rise of Nations"
+    rise2ini="$rise2ini_path/rise2.ini"
 
-if [[ ! -f $rise2ini ]]; then
-	touch "$rise2ini"
-	rise2ini_created=true
-fi
+    # create the rise2.ini file if it does not exist already
+    if [[ ! -d "$rise2ini_path" ]]; then
+        mkdir -p "$rise2ini_path"
+    fi
 
-# delete these entries, if they exist
-sed -i '/ForceGDICursor=/d' "$rise2ini"
-sed -i '/ForceLowCPUBackgroundVid=/d' "$rise2ini"
-sed -i '/SkipIntroMovies=/d' "$rise2ini"
-sed -i '/FullScreen=/d' "$rise2ini"
+    if [[ ! -f $rise2ini ]]; then
+        touch "$rise2ini"
+        rise2ini_created=true
+    fi
 
-# create a new settings block if it does not exist
-if [[ "$rise2ini_created" == "true" ]]; then
-    cat <<EOF >> "$rise2ini"
+    # delete these entries, if they exist
+    sed -i '/ForceGDICursor=/d' "$rise2ini"
+    sed -i '/ForceLowCPUBackgroundVid=/d' "$rise2ini"
+    sed -i '/SkipIntroMovies=/d' "$rise2ini"
+    sed -i '/FullScreen=/d' "$rise2ini"
+
+    # create a new settings block if it does not exist
+    if [[ "$rise2ini_created" == "true" ]]; then
+        cat <<EOF >> "$rise2ini"
 [RISE OF NATIONS]
 EOF
-fi
+    fi
 
-# append the necessary setings
-cat <<EOF >> "$rise2ini"
+    # append the necessary setings
+    cat <<EOF >> "$rise2ini"
 ForceGDICursor=1
 SkipIntroMovies=1
 ForceLowCPUBackgroundVid=1
 FullScreen=0
 EOF
 
-# create the shortcut and exit
-if [[ -f "$GAME_PATH/patriots.exe" ]]; then
-	POL_Shortcut "patriots.exe" "$TITLE"
-else
-	POL_Shortcut "rise.exe" "$TITLE"	
+    # create the shortcut and exit
+    if [[ -f "$GAME_PATH/patriots.exe" ]]; then
+        POL_Shortcut "patriots.exe" "$TITLE"
+    else
+        POL_Shortcut "rise.exe" "$TITLE"
+    fi
+
 fi
 
 POL_SetupWindow_Close
