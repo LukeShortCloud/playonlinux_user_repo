@@ -1,6 +1,6 @@
 #!/bin/bash
 # Rise of Nations - Play On Linux script
-# Version: 0.3.0
+# Version: 0.4.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux
 
@@ -14,8 +14,12 @@ POL_Debug_Init
 TITLE="Rise of Nations"
 PREFIX="rise_of_nations_steam"
 GAME_PATH="$POL_USER_ROOT/wineprefix/$PREFIX/drive_c/$PROGRAMFILES/Microsoft Games/Rise of Nations"
-WINE_VERSION="3.7"
+WINE_VERSION="3.10"
 STEAM_ID="287450"
+# A 64-bit prefix is not required for Rise of Nations.
+# This is set to provide additional testing for
+# Wine itself.
+POL_System_SetArch "amd64"
 
 # start the installation window
 POL_SetupWindow_Init
@@ -34,14 +38,18 @@ POL_SetupWindow_message "$(eval_gettext 'Do not start the game once it is finish
 POL_SetupWindow_question "$(eval_gettext 'Are you installing the Extended Edition? Experimental support is provided for installing it from Steam.')" "$TITLE"
 
 if [[ $APP_ANSWER == "TRUE" ]]; then
+    # This is the only dependency. mfc140.dll is not shipped with Wine and causes
+    # an error on launch.
+    WINEPREFIX="$WINEPREFIX" winetricks -q vcrun2015
     # RoN: Extended Edition requires at least Windows 7
     Set_OS "win7"
-    POL_Call POL_Install_crypt32
-    # vcrun2015 might also have to be installed before installing Steam
     POL_Call POL_Install_steam
     POL_Wine start /unix "$WINEPREFIX/drive_c/$PROGRAMFILES/Steam/steam.exe" steam://install/$STEAM_ID
     POL_Wine_WaitExit "$TITLE"
-    POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+    # Launching the game via Steam does not work. It must be started
+    # directly from the game's actual exectuable file.
+    #POL_Shortcut "steam.exe" "$TITLE" "" "steam://rungameid/$STEAM_ID"
+    POL_Shortcut "patriots.exe" "$TITLE" ""
 else
     # install required depedencies in the Wine environment
     # the installer needs mfc42 to fix this error:
