@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pinball FX 2 (Steam)
-# Version: 0.3.0
+# Version: 0.4.0
 # Author: ekultails@gmail.com
 # Website: https://github.com/ekultails/playonlinux_user_repo
 
@@ -14,7 +14,7 @@ POL_Debug_Init
 # global variables
 TITLE="Pinball FX 2"
 PREFIX="pinball_fx_2"
-WINE_VERSION="2.0"
+WINE_VERSION="3.0.1"
 STEAM_ID="226980"
 
 # start the installation window
