@@ -1,3 +1,5 @@
+**I have moved all of my scripts over to [Lutris](https://lutris.net/) and recommend using that instead. Lutris is actively maintained compared to PlayOnLinux.**
+
 # PlayOnLinux User Repository (PUR)
 
 This is a collection of unofficial PlayOnLinux scripts to help run Windows games on Linux. These will get faster updates than the official PlayOnLinux scripts.
